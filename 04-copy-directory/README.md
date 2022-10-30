@@ -6,7 +6,7 @@
 
 - Запрещается использование любых сторонних модулей
 - Каждое из заданий должно запускаться командой node <имя папки задания> выполненной в корневой директории
-- Запрещается использование синхронных функций модуля fs такие, как ```fs.statSync(path[, options])```, 
+- Запрещается использование синхронных функций модуля fs такие, как ```fs.statSync(path[, options])```,
 ```fs.readFileSync(path[, options])``` и другие находящиеся в разделе [synchronous API](https://nodejs.org/api/fs.html#fs_synchronous_api)
 
 
@@ -19,7 +19,7 @@
 
 - Научиться копировать файлы и директории.
 
-### Описание  
+### Описание
 
 Порядок действий для выполнения задачи:
 
@@ -30,10 +30,10 @@
 
 ### Советы
 
-Обратите внимание на опцию ```recursive``` которую можно передать в ```fsPromises/mkdir```. С её помощью вы можете избежать ошибок в случаях когда директория уже создана. 
+Обратите внимание на опцию ```recursive``` которую можно передать в ```fsPromises/mkdir```. С её помощью вы можете избежать ошибок в случаях когда директория уже создана.
 
 ##### Полезные ссылки
 
-- [copyFile](https://nodejs.org/api/fs.html#fs_fspromises_copyfile_src_dest_mode)  
-- [mkdir](https://nodejs.org/api/fs.html#fs_fspromises_mkdir_path_options)
+- [copyFile](https://nodejs.org/api/fs.html#fs_fspromises_copyfile_src_dest_mode)
+- [mkdir](https://nodejs.org/api/fs.html#fs_fspromises_mkdir_path_ofptions)
 
