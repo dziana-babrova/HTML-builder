@@ -1,19 +1,20 @@
 const fsPromise = require("fs/promises");
 const fs = require("fs");
 const path = require("node:path");
-const { stdout } = require("process");
+
+const pathToInputDirectory = path.join(__dirname, "styles");
+const pathToBundleFile = path.join(__dirname, "project-dist", "bundle.css");
 
 async function createBundle() {
-  const files = await fsPromise.readdir(path.join(__dirname, "styles"));
-  const cssFiles = [];
+  const files = await fsPromise.readdir(pathToInputDirectory);
 
-  const writableStream = fs.createWriteStream(path.join(__dirname, "project-dist", "bundle.css"));
+  const writableStream = fs.createWriteStream(pathToBundleFile);
 
 
     for (let i = 0; i < files.length; i++) {
-      const stats = await fsPromise.stat(path.join(__dirname, "styles", files[i]));
+      const stats = await fsPromise.stat(path.join(pathToInputDirectory, files[i]));
       if (stats.isFile() && path.parse(files[i]).ext === ".css") {
-        const readableStream = fs.createReadStream(path.join(__dirname, "styles", files[i]), "utf-8");
+        const readableStream = fs.createReadStream(path.join(pathToInputDirectory, files[i]), "utf-8");
         readableStream.on("data", (data) => writableStream.write(data));
       }
   }
