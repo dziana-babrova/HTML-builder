@@ -3,41 +3,46 @@ const fs = require("fs");
 const path = require("node:path");
 const { stdout } = require("process");
 
-createDir(__dirname, "files", "files-copy");
-copyDir(__dirname, "files", "files-copy");
+const pathToInputDirectory = path.join(__dirname, "files");
+const pathToOutputDirectory = path.join(__dirname, "files-copy");
 
-async function createDir(readDirectoryPath, readDirectoryName, copyName) {
-  await fsPromise.mkdir(path.join(readDirectoryPath, copyName), { recursive: true }, (err) => {
+createDir();
+copyDir(pathToInputDirectory, pathToOutputDirectory);
+
+async function createDir() {
+  await fsPromise.mkdir(pathToOutputDirectory, { recursive: true }, (err) => {
     if (err) throw err;
   });
 }
 
-async function copyDir(readDirectoryPath, readDirectoryName, copyName) {
 
-  const filesCreated = await fsPromise.readdir(path.join(readDirectoryPath, copyName));
+async function copyDir(pathToInputDirectory, pathToOutputDirectory) {
+  const filesCreated = await fsPromise.readdir(path.join(pathToOutputDirectory));
 
   for (let i = 0; i < filesCreated.length; i++) {
-    const stats = await fsPromise.stat(path.join(readDirectoryPath, readDirectoryName, filesCreated[i]));
+    const stats = await fsPromise.stat(path.join(pathToInputDirectory, filesCreated[i]));
     if (stats.isFile()) {
-      await fsPromise.unlink(path.join(readDirectoryPath, copyName, filesCreated[i]));
+      await fsPromise.unlink(path.join(pathToOutputDirectory, filesCreated[i]));
     } else {
-      await fsPromise.rmdir(path.join(readDirectoryPath, copyName, filesCreated[i]));
+      await fsPromise.rmdir(path.join(pathToOutputDirectory, filesCreated[i]));
     }
   }
 
-  const files = await fsPromise.readdir(path.join(readDirectoryPath, readDirectoryName));
+  const files = await fsPromise.readdir(path.join(pathToInputDirectory));
   for (let i = 0; i < files.length; i++) {
-    const stats = await fsPromise.stat(path.join(readDirectoryPath, readDirectoryName, files[i]));
+    const stats = await fsPromise.stat(path.join(pathToInputDirectory, files[i]));
     if (stats.isDirectory()) {
-      await fsPromise.mkdir(path.resolve(__dirname, copyName, files[i]), { recursive: true }, (err) => {
+      await fsPromise.mkdir(path.resolve(pathToOutputDirectory, files[i]), { recursive: true }, (err) => {
         if (err) throw err;
       });
+      const newpathToInputDirectory = path.join(pathToInputDirectory, files[i]);
+      const newPathToOutpoutDirectory = path.join(pathToOutputDirectory, files[i]);
+      copyDir(newpathToInputDirectory, newPathToOutpoutDirectory);
     } else {
       await fsPromise.copyFile(
-        path.join(readDirectoryPath, readDirectoryName, files[i]),
-        path.resolve(readDirectoryPath, copyName, files[i])
+        path.join(pathToInputDirectory, files[i]),
+        path.resolve(pathToOutputDirectory, files[i])
       );
     }
   }
-  stdout.write("The files has been copied successfully");
 }
