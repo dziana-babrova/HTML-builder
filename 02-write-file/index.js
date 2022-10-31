@@ -5,7 +5,9 @@ const { stdin: input, stdout: output, argv } = require("process");
 
 const rl = readline.createInterface({ input, output });
 
-const writableStream = fs.createWriteStream(path.join(__dirname, "text.txt"));
+const pathToFile = path.join(__dirname, "text.txt");
+
+const writableStream = fs.createWriteStream(pathToFile);
 
 output.write("Hi, my dear frield! Enter your notes here:\n");
 
