@@ -20,11 +20,11 @@ async function copyDir(pathToInputDirectory, pathToOutputDirectory) {
   const filesCreated = await fsPromise.readdir(path.join(pathToOutputDirectory));
 
   for (let i = 0; i < filesCreated.length; i++) {
-    const stats = await fsPromise.stat(path.join(pathToInputDirectory, filesCreated[i]));
+    const stats = await fsPromise.stat(path.join(pathToOutputDirectory, filesCreated[i]));
     if (stats.isFile()) {
       await fsPromise.unlink(path.join(pathToOutputDirectory, filesCreated[i]));
     } else {
-      await fsPromise.rmdir(path.join(pathToOutputDirectory, filesCreated[i]));
+      await removeDir(path.join(pathToOutputDirectory, filesCreated[i]));
     }
   }
 
@@ -43,6 +43,26 @@ async function copyDir(pathToInputDirectory, pathToOutputDirectory) {
         path.join(pathToInputDirectory, files[i]),
         path.resolve(pathToOutputDirectory, files[i])
       );
+    }
+  }
+}
+
+async function removeDir(folder) {
+  if (fs.access(folder, function (error) {})) {
+    const files = await fsPromise.readdir(path.join(folder));
+    for (let i = 0; i < files.length; i++) {
+      const stats = await fsPromise.stat(path.join(folder, files[i]));
+      if (stats.isDirectory()) {
+        const directoryFiles = await fsPromise.readdir(path.join(pathToInputDirectory));
+        if (directoryFiles.length > 0) {
+          const newFolder = path.join(folder, files[i]);
+          removeDir(newFolder);
+        } else {
+          await fsPromise.rmdir(folder, files[i]);
+        }
+      } else {
+        await fsPromise.unlink(path.join(folder, files[i]));
+      }
     }
   }
 }
