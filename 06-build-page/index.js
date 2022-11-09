@@ -44,21 +44,30 @@ async function createHtml() {
   const pathToHtml = path.join(__dirname, "template.html");
   const pathToFinalHtml = path.join(destination, "index.html");
 
-  const components = await fsPromise.readdir(path.join(__dirname, "components"));
 
+
+  const components = await fsPromise.readdir(path.join(__dirname, "components"));
+  let dataString = "";
   const readableStream = fs.createReadStream(pathToHtml);
   const writableStream = fs.createWriteStream(pathToFinalHtml);
   readableStream.on("data", function (dataFromMainStream) {
+    dataString += dataFromMainStream.toString();
+  });
+  readableStream.on("end", () => {
     components.forEach(async (item, index) => {
+      let component = "";
       const dataFromStream = fs.createReadStream(path.join(__dirname, "components", `${item}`));
       dataFromStream.on("data", (data) => {
-        dataFromMainStream = dataFromMainStream.toString().replace(`{{${path.parse(item).name}}}`, data);
+        component += data.toString();
+      });
+      dataFromStream.on("end", () => {
+        dataString = dataString.replace(`{{${path.parse(item).name}}}`, component);
         if (index === components.length - 1) {
-          writableStream.write(dataFromMainStream);
+          writableStream.write(dataString);
         }
       })
-    })
-  });
+    });
+  })
 }
 
 async function createAssetsDir() {
