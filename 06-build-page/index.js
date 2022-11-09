@@ -44,30 +44,17 @@ async function createHtml() {
   const pathToHtml = path.join(__dirname, "template.html");
   const pathToFinalHtml = path.join(destination, "index.html");
 
-
-
   const components = await fsPromise.readdir(path.join(__dirname, "components"));
-  let dataString = "";
-  const readableStream = fs.createReadStream(pathToHtml);
-  const writableStream = fs.createWriteStream(pathToFinalHtml);
-  readableStream.on("data", function (dataFromMainStream) {
-    dataString += dataFromMainStream.toString();
-  });
-  readableStream.on("end", () => {
-    components.forEach(async (item, index) => {
-      let component = "";
-      const dataFromStream = fs.createReadStream(path.join(__dirname, "components", `${item}`));
-      dataFromStream.on("data", (data) => {
-        component += data.toString();
-      });
-      dataFromStream.on("end", () => {
-        dataString = dataString.replace(`{{${path.parse(item).name}}}`, component);
-        if (index === components.length - 1) {
-          writableStream.write(dataString);
-        }
-      })
-    });
-  })
+  let template = await fsPromise.readFile(pathToHtml, "utf-8");
+
+
+  for (let item of components) {
+    const pathToComponent = path.join(__dirname, "components", `${item}`);
+    const component = await fsPromise.readFile(pathToComponent, "utf-8");
+    template = template.replace(`{{${path.parse(item).name}}}`, component);
+  }
+
+  await fsPromise.writeFile(pathToFinalHtml, template);
 }
 
 async function createAssetsDir() {
