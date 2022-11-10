@@ -6,17 +6,18 @@ const { stdout } = require("process");
 const pathToInputDirectory = path.join(__dirname, "files");
 const pathToOutputDirectory = path.join(__dirname, "files-copy");
 
-createDir();
+// createDir();
 copyDir(pathToInputDirectory, pathToOutputDirectory);
 
-async function createDir() {
-  await fsPromise.mkdir(pathToOutputDirectory, { recursive: true }, (err) => {
-    if (err) throw err;
-  });
-}
+// async function createDir() {
+// }
 
 
 async function copyDir(pathToInputDirectory, pathToOutputDirectory) {
+    await fsPromise.mkdir(pathToOutputDirectory, { recursive: true }, (err) => {
+      if (err) throw err;
+    });
+
   const filesCreated = await fsPromise.readdir(path.join(pathToOutputDirectory));
 
   for (let i = 0; i < filesCreated.length; i++) {
